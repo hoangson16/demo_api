@@ -48,3 +48,25 @@ class BaiVietViews(APIView):
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
+
+class BaiVietDetail(APIView):
+
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request, pk):
+        bai_viet = BaiViet.objects.get(pk=pk)
+        serializer = BaiVietSerializer(bai_viet)
+        return Response(serializer.data)
+
+    def put(self, request, pk): 
+        bai_viet = BaiViet.objects.get(pk=pk)
+        serializer = BaiVietSerializer(bai_viet, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+
+    def delete(self, request, pk):
+        bai_viet = BaiViet.objects.get(pk=pk)
+        bai_viet.delete()
+        return Response({'message': 'Da xoa bai viet'})
