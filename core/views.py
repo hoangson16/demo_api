@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from .serializers import BaiVietSerializer
+from .models import BaiViet
 
 
 class TestView(APIView):
@@ -28,22 +30,17 @@ class TestView2(APIView):
         ]
         return Response(data)
 
-# def test_view(request):
-#     data = {
-#         'name': 'Son',
-#         'age': 27,
-#     }
-#     return JsonResponse(data)
+class BaiVietViews(APIView):
 
-# def test_view2(request):
-#     data = [
-#         {
-#             'name': 'Son',
-#             'age': 27,
-#         },
-#         {
-#             'name': 'Dat',
-#             'age': 27,
-#         },
-#     ]
-#     return JsonResponse(data, safe=False)
+    def get(self, request):
+        danh_sach_bai_viet = BaiViet.objects.all()
+        serializer = BaiVietSerializer(danh_sach_bai_viet, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = BaiVietSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
